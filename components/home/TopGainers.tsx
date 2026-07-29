@@ -5,6 +5,7 @@ import { ChangeBadge } from '../ui/ChangeBadge';
 import { Coin } from '../../services/types';
 import { colors } from '../../theme/colors';
 import { GUTTER, radius, spacing } from '../../theme/spacing';
+import { CARD_BORDER_WIDTH, CARD_GAP, CARD_PADDING, innerGlow } from '../../theme/effects';
 import { typography } from '../../theme/typography';
 
 type Props = {
@@ -28,7 +29,8 @@ export function TopGainers({ coins }: Props) {
 function GainerCard({ coin }: { coin: Coin }) {
   return (
     <Pressable style={styles.card} accessibilityRole="button">
-      <CoinAvatar coin={coin} size={38} />
+      {/* Sized so the card hugs to Figma's 43.94 total: 23.4 + 9.35 padding x2 + 0.93 border x2. */}
+      <CoinAvatar coin={coin} size={23.4} />
       <Text style={[typography.rowTitle, styles.name]} numberOfLines={1}>
         {coin.symbol}
       </Text>
@@ -45,13 +47,13 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.md,
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
+    gap: CARD_GAP,
+    padding: CARD_PADDING,
     borderRadius: radius.none,
-    borderWidth: 1,
-    borderColor: colors.borderStrong,
-    backgroundColor: colors.surface,
+    borderWidth: CARD_BORDER_WIDTH,
+    borderColor: colors.cardBorder,
+    backgroundColor: colors.cardFill,
+    boxShadow: innerGlow.gainerCard,
   },
   name: {
     color: colors.text,

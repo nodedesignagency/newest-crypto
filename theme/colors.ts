@@ -8,6 +8,10 @@ export const colors = {
   surfaceRaised: '#171C24',
   border: 'rgba(255,255,255,0.10)',
   borderStrong: 'rgba(255,255,255,0.14)',
+
+  /** Card surface, per Figma: 2% white over the ground, with a 10% white border. */
+  cardFill: 'rgba(255,255,255,0.02)',
+  cardBorder: 'rgba(255,255,255,0.10)',
   /** Square cap terminating each divider — solid white, flush against the line. */
   dividerCap: '#FFFFFF',
 

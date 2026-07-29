@@ -6,6 +6,7 @@ import { ChangeBadge } from '../ui/ChangeBadge';
 import { SpotlightItem } from '../../services/types';
 import { colors } from '../../theme/colors';
 import { GUTTER, radius, spacing } from '../../theme/spacing';
+import { CARD_BORDER_WIDTH, CARD_PADDING, innerGlow } from '../../theme/effects';
 import { typography } from '../../theme/typography';
 import { formatCompactUsd } from '../../utils/format';
 
@@ -53,12 +54,13 @@ export function SpotlightCard({ item }: Props) {
 const styles = StyleSheet.create({
   card: {
     marginHorizontal: GUTTER,
-    padding: spacing.lg,
-    gap: spacing.lg,
+    padding: CARD_PADDING,
+    gap: spacing.md,
     borderRadius: radius.none,
-    borderWidth: 1,
-    borderColor: colors.borderStrong,
-    backgroundColor: colors.surface,
+    borderWidth: CARD_BORDER_WIDTH,
+    borderColor: colors.cardBorder,
+    backgroundColor: colors.cardFill,
+    boxShadow: innerGlow.spotlight,
   },
   topRow: {
     flexDirection: 'row',
