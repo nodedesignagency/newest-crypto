@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
   dividerRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.sm,
+    // No gap — the cap sits flush against the line it terminates.
     paddingHorizontal: GUTTER / 2,
   },
   cap: {

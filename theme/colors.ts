@@ -8,8 +8,8 @@ export const colors = {
   surfaceRaised: '#171C24',
   border: 'rgba(255,255,255,0.10)',
   borderStrong: 'rgba(255,255,255,0.14)',
-  /** Square cap terminating each divider — brighter than the line itself. */
-  dividerCap: 'rgba(255,255,255,0.45)',
+  /** Square cap terminating each divider — solid white, flush against the line. */
+  dividerCap: '#FFFFFF',
 
   /** Canonical brand teal. The icons ship three near-identical teals
    * (#10F5D4, #0BF5D3, #02F5D1); they collapse to accent/positive here. */
