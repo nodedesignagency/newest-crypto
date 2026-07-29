@@ -11,6 +11,7 @@
     "test": "tsx --test services/*.test.ts"
   },
   "dependencies": {
+    "@react-native-masked-view/masked-view": "^0.3.2",
     "expo": "~54.0.36",
     "expo-blur": "~15.0.8",
     "expo-constants": "~18.0.13",

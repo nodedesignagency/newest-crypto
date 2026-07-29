@@ -69,7 +69,11 @@ export const FADE_MAX_OPACITY = Number((40.2 / 112.19).toFixed(3));
 
 /**
  * expo-blur's web backend renders `blur(intensity * 0.2px)`, so 66 reproduces
- * Figma's 13.28px exactly. On iOS/Android intensity drives a native blur whose
- * radius isn't expressed in px, but 66 lands in the same visual register.
+ * Figma's 13.28px. On iOS/Android intensity drives a native blur that isn't
+ * expressed in px but tracks closely.
+ *
+ * The blur is masked by a gradient in BottomFade rather than applied flat —
+ * Figma's uniform background blur would snap content from sharp to fully
+ * blurred at the layer's top edge.
  */
 export const FADE_BLUR_INTENSITY = 66;
