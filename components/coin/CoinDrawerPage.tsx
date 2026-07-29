@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
-import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
+import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import Animated, { FadeIn, FadeInDown, runOnJS } from 'react-native-reanimated';
 import { CoinAvatar } from '../ui/CoinAvatar';
 import { GainIcon, LossIcon } from '../icons';
-import { PriceChart } from './PriceChart';
+import { PriceChart, scrubX } from './PriceChart';
+import { StatPair } from './StatPair';
 import { TimeframeSelector } from './TimeframeSelector';
 import { useCoinChart } from '../../hooks/useCoinChart';
 import { ChartRange, Coin } from '../../services/types';
@@ -11,7 +13,7 @@ import { colors } from '../../theme/colors';
 import { CARD_BORDER_WIDTH } from '../../theme/effects';
 import { radius, spacing } from '../../theme/spacing';
 import { typography } from '../../theme/typography';
-import { formatPercent, formatPrice } from '../../utils/format';
+import { formatCompactUsd, formatPercent, formatPrice } from '../../utils/format';
 
 type Props = {
   coin: Coin;
@@ -22,11 +24,19 @@ type Props = {
   active: boolean;
 };
 
-const CHART_HEIGHT = 190;
+const CHART_HEIGHT = 168;
+
+/**
+ * How long to hold before a drag scrubs the chart. Without this, dragging
+ * sideways on the chart would be ambiguous — page to the next coin, or inspect
+ * a price? Holding first states the intent.
+ */
+const SCRUB_HOLD_MS = 160;
 
 /** One coin's page inside the drawer. Several are mounted side by side for swiping. */
 export function CoinDrawerPage({ coin, width, height, active }: Props) {
   const [range, setRange] = useState<ChartRange>('24H');
+  const [scrubIndex, setScrubIndex] = useState<number | null>(null);
   const { points, loading, error, retry } = useCoinChart(active ? coin.id : null, range);
 
   const up = coin.changePct >= 0;
@@ -36,6 +46,38 @@ export function CoinDrawerPage({ coin, width, height, active }: Props) {
 
   const rank = coin.rank ? `Rank #${coin.rank}` : '';
   const subtitle = [coin.name === coin.symbol ? '' : coin.symbol, rank].filter(Boolean).join(' • ');
+
+  const extremes = useMemo(() => {
+    if (!points?.length) return null;
+    return { high: Math.max(...points), low: Math.min(...points) };
+  }, [points]);
+
+  const setIndex = useCallback(
+    (i: number | null) => {
+      if (!points?.length) return;
+      setScrubIndex(i === null ? null : Math.min(points.length - 1, Math.max(0, i)));
+    },
+    [points],
+  );
+
+  const scrub = useMemo(
+    () =>
+      Gesture.Pan()
+        .activateAfterLongPress(SCRUB_HOLD_MS)
+        .onUpdate((e) => {
+          'worklet';
+          const count = points?.length ?? 0;
+          if (count < 2) return;
+          runOnJS(setIndex)(Math.round((e.x / chartWidth) * (count - 1)));
+        })
+        .onFinalize(() => {
+          'worklet';
+          runOnJS(setIndex)(null);
+        }),
+    [chartWidth, points, setIndex],
+  );
+
+  const scrubbedPrice = scrubIndex != null && points ? points[scrubIndex] : null;
 
   return (
     <View style={[styles.page, { width }, height ? { height } : null]}>
@@ -50,7 +92,7 @@ export function CoinDrawerPage({ coin, width, height, active }: Props) {
       </View>
 
       <Animated.View entering={FadeInDown.duration(320)} style={styles.priceBlock}>
-        <Text style={styles.price}>{formatPrice(coin.price)}</Text>
+        <Text style={styles.price}>{formatPrice(scrubbedPrice ?? coin.price)}</Text>
         <View style={styles.changeRow}>
           {up ? <GainIcon size={9} /> : <LossIcon size={11} />}
           <Text style={[typography.label, styles.change, { color: tint }]}>
@@ -60,52 +102,101 @@ export function CoinDrawerPage({ coin, width, height, active }: Props) {
         </View>
       </Animated.View>
 
-      <View style={[styles.chart, { height: CHART_HEIGHT }]}>
-        {points ? (
-          <PriceChart
-            // Remounting per range lets the new line fade in rather than snap.
-            key={`${coin.id}-${range}`}
-            points={points}
-            width={chartWidth}
-            height={CHART_HEIGHT}
-            color={tint}
-          />
-        ) : null}
+      <GestureDetector gesture={scrub}>
+        <View style={[styles.chart, { height: CHART_HEIGHT }]}>
+          {points ? (
+            <>
+              <PriceChart
+                // Remounting per range lets the new line fade in rather than snap.
+                key={`${coin.id}-${range}`}
+                points={points}
+                width={chartWidth}
+                height={CHART_HEIGHT}
+                color={tint}
+                scrubIndex={scrubIndex}
+              />
 
-        {loading && !points ? (
-          <View style={styles.chartState}>
-            <ActivityIndicator color={colors.accent} />
-          </View>
-        ) : null}
+              {/* Hidden while scrubbing — the bubble occupies that corner, and the
+                  value under your finger is what you're reading at that moment. */}
+              {extremes && scrubIndex == null ? (
+                <>
+                  <Text style={[typography.rowSubtitle, styles.high]}>
+                    {formatPrice(extremes.high)}
+                  </Text>
+                  <Text style={[typography.rowSubtitle, styles.low]}>
+                    {formatPrice(extremes.low)}
+                  </Text>
+                </>
+              ) : null}
 
-        {error && !points ? (
-          <Pressable style={styles.chartState} onPress={retry} accessibilityRole="button">
-            <Text style={[typography.label, styles.muted]}>{error.message}</Text>
-            <Text style={[typography.label, styles.retry]}>Tap to retry</Text>
-          </Pressable>
-        ) : null}
-      </View>
+              {scrubbedPrice != null ? (
+                <View
+                  pointerEvents="none"
+                  style={[
+                    styles.bubble,
+                    // Clamped so the bubble never hangs off either edge.
+                    {
+                      left: Math.min(
+                        chartWidth - BUBBLE_WIDTH,
+                        Math.max(0, scrubX(scrubIndex!, points.length, chartWidth) - BUBBLE_WIDTH / 2),
+                      ),
+                    },
+                  ]}
+                >
+                  <Text style={styles.bubbleText}>{formatPrice(scrubbedPrice)}</Text>
+                </View>
+              ) : null}
+            </>
+          ) : null}
+
+          {loading && !points ? (
+            <View style={styles.chartState}>
+              <ActivityIndicator color={colors.accent} />
+            </View>
+          ) : null}
+
+          {error && !points ? (
+            <Pressable style={styles.chartState} onPress={retry} accessibilityRole="button">
+              <Text style={[typography.label, styles.muted]}>{error.message}</Text>
+              <Text style={[typography.label, styles.retry]}>Tap to retry</Text>
+            </Pressable>
+          ) : null}
+        </View>
+      </GestureDetector>
 
       <TimeframeSelector value={range} onChange={setRange} />
 
+      <View style={styles.stats}>
+        <StatPair
+          left={{ label: 'Your balance', value: `0 ${coin.symbol}` }}
+          right={{ label: 'Value', value: '$0.00' }}
+        />
+        <StatPair
+          left={{ label: '24h volume', value: formatCompactUsd(coin.volume24h ?? 0) }}
+          right={{ label: 'Market cap', value: formatCompactUsd(coin.marketCap) }}
+        />
+      </View>
+
       <View style={styles.spacer} />
 
-      <Animated.View entering={FadeIn.delay(120)} style={styles.buyWrap}>
+      <Animated.View entering={FadeIn.delay(120)}>
         <Pressable style={styles.buy} accessibilityRole="button">
           <View style={styles.buyGlyph}>
             <Text style={styles.buyGlyphText}>$</Text>
           </View>
-          <Text style={styles.buyText}>Buy Now</Text>
+          <Text style={styles.buyText}>Buy {coin.symbol}</Text>
         </Pressable>
       </Animated.View>
     </View>
   );
 }
 
+const BUBBLE_WIDTH = 84;
+
 const styles = StyleSheet.create({
   page: {
     paddingHorizontal: spacing.xl,
-    gap: spacing.xl,
+    gap: spacing.lg,
   },
   spacer: {
     flex: 1,
@@ -125,7 +216,7 @@ const styles = StyleSheet.create({
   },
   price: {
     color: colors.text,
-    fontSize: 40,
+    fontSize: 38,
     fontWeight: '500',
   },
   changeRow: {
@@ -142,6 +233,34 @@ const styles = StyleSheet.create({
   chart: {
     justifyContent: 'center',
   },
+  high: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    color: colors.textMuted,
+  },
+  low: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    color: colors.textMuted,
+  },
+  bubble: {
+    position: 'absolute',
+    top: -6,
+    width: BUBBLE_WIDTH,
+    paddingVertical: 3,
+    alignItems: 'center',
+    borderRadius: radius.none,
+    borderWidth: CARD_BORDER_WIDTH,
+    borderColor: colors.cardBorder,
+    backgroundColor: colors.surface,
+  },
+  bubbleText: {
+    color: colors.text,
+    fontSize: 12,
+    fontWeight: '500',
+  },
   chartState: {
     ...StyleSheet.absoluteFillObject,
     alignItems: 'center',
@@ -152,8 +271,8 @@ const styles = StyleSheet.create({
     color: colors.accent,
     fontWeight: '500',
   },
-  buyWrap: {
-    paddingTop: spacing.xs,
+  stats: {
+    gap: spacing.md,
   },
   buy: {
     flexDirection: 'row',
