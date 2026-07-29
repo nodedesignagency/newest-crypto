@@ -11,8 +11,14 @@
  * border and padding are what the design specifies.
  */
 
-/** Figma: Borders — 0.93px, inner alignment. */
-export const CARD_BORDER_WIDTH = 0.93;
+/**
+ * Figma reports 0.93px, but that is the 402/430 export scale applied to a 1px
+ * border (0.93 / 0.93488 = 0.995). Drawing a true 1px matters: at low pixel
+ * ratios a sub-pixel border antialiases into the fill and disappears entirely —
+ * measurably so on the Spotlight card, whose inner glow lifts the fill to nearly
+ * the border's own luminance.
+ */
+export const CARD_BORDER_WIDTH = 1;
 
 /** Figma: Padding 9.35px on the Top Gainers card. */
 export const CARD_PADDING = 9.35;
@@ -36,4 +42,16 @@ export const innerGlow = {
    *   X 0, Y 0, Blur 146.03, Spread -20.57, #FFFFFF 4%
    */
   gainerCard: 'inset 0px 0px 146.03px -20.57px rgba(255,255,255,0.04)',
+
+  /**
+   * Bottom navigation bar.
+   *   X 0, Y 0, Blur 166.5,  Spread -20.57, #FFFFFF 6%
+   *   X 0, Y 0, Blur  84.61, Spread -46.74, #FFFFFF 12%
+   */
+  tabBar:
+    'inset 0px 0px 166.5px -20.57px rgba(255,255,255,0.06), ' +
+    'inset 0px 0px 84.61px -46.74px rgba(255,255,255,0.12)',
 } as const;
+
+/** Figma: the bottom nav measures 402 × 87.88 on a 402pt-wide frame. */
+export const TAB_BAR_HEIGHT = 87.88;

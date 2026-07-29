@@ -3,7 +3,7 @@
  * Nothing outside this file should hardcode a hex value.
  */
 export const colors = {
-  bg: '#05070A',
+  bg: '#050410',
   surface: '#12161C',
   surfaceRaised: '#171C24',
   border: 'rgba(255,255,255,0.10)',

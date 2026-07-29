@@ -21,7 +21,10 @@ export const radius = {
 /**
  * Horizontal page gutter used by every section on the home screen.
  *
- * Figma puts the Spotlight card at 357.13px wide on a 393pt frame, which leaves
- * 17.9 a side — i.e. 18.7, twice the 9.35 unit the card padding is built on.
+ * The Figma frame is 402pt wide (its nav bar measures 402 × 87.88) and the
+ * Spotlight card is 357.13 wide, leaving 22.44 a side.
+ *
+ * Every value in the spec is round at 430pt and scaled by 402/430 = 0.93488 —
+ * this gutter is 24, the card padding 10, the inner gap 20, borders 1.
  */
-export const GUTTER = 18.7;
+export const GUTTER = 22.44;

@@ -20,6 +20,14 @@ export function SpotlightCard({ item }: Props) {
 
   return (
     <Pressable style={styles.card} accessibilityRole="button">
+      {/*
+        The glow lives on its own layer inside the border rather than on the card.
+        A translucent border lets the card's own inset shadow bleed through it, which
+        lifted the border to within 1/255 of the fill's luminance and made it vanish.
+        Clipped to the padding box, the glow cannot reach the border.
+      */}
+      <View style={styles.glow} pointerEvents="none" />
+
       <View style={styles.topRow}>
         <CoinAvatar coin={coin} size={46} />
         <View style={styles.identity}>
@@ -60,6 +68,10 @@ const styles = StyleSheet.create({
     borderWidth: CARD_BORDER_WIDTH,
     borderColor: colors.cardBorder,
     backgroundColor: colors.cardFill,
+    overflow: 'hidden',
+  },
+  glow: {
+    ...StyleSheet.absoluteFillObject,
     boxShadow: innerGlow.spotlight,
   },
   topRow: {
