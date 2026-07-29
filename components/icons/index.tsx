@@ -230,6 +230,22 @@ export function TrendingIcon({ size = 20 }: Pick<IconProps, 'size'>) {
   );
 }
 
+/** Diagonal arrows pointing out of a corner — "open this in full". */
+export function ExpandIcon({ size = 20, color = colors.textMuted, opacity = 1 }: IconProps) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 20 20" fill="none">
+      <Path
+        d="M12 3H17V8M17 3L11 9M8 17H3V12M3 17L9 11"
+        stroke={color}
+        strokeOpacity={opacity}
+        strokeWidth={STROKE}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </Svg>
+  );
+}
+
 export function ChevronRightIcon({ size = 20, color = colors.textMuted }: IconProps) {
   return (
     <Svg width={size} height={size} viewBox="0 0 20 20" fill="none">

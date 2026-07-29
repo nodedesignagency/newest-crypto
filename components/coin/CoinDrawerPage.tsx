@@ -3,7 +3,7 @@ import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-nati
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
 import Animated, { FadeIn, FadeInDown, runOnJS } from 'react-native-reanimated';
 import { CoinAvatar } from '../ui/CoinAvatar';
-import { GainIcon, LossIcon } from '../icons';
+import { ExpandIcon, GainIcon, LossIcon } from '../icons';
 import { PriceChart, scrubX } from './PriceChart';
 import { StatPair } from './StatPair';
 import { TimeframeSelector } from './TimeframeSelector';
@@ -22,9 +22,18 @@ type Props = {
   height: number;
   /** Only the page in view fetches its chart; neighbours stay idle until swiped to. */
   active: boolean;
+  onOpenDetail?: (coin: Coin) => void;
 };
 
-const CHART_HEIGHT = 168;
+/**
+ * Everything above the chart plus everything below it, measured: identity row,
+ * price block, timeframes, two stat pairs, the buy button, and the gaps between.
+ * The chart takes whatever is left, so the button can never be pushed off-screen
+ * on a short device — which is exactly what happened on a 720x1600 phone.
+ */
+const CHROME_HEIGHT = 430;
+const CHART_MIN = 96;
+const CHART_MAX = 190;
 
 /**
  * How long to hold before a drag scrubs the chart. Without this, dragging
@@ -34,7 +43,7 @@ const CHART_HEIGHT = 168;
 const SCRUB_HOLD_MS = 160;
 
 /** One coin's page inside the drawer. Several are mounted side by side for swiping. */
-export function CoinDrawerPage({ coin, width, height, active }: Props) {
+export function CoinDrawerPage({ coin, width, height, active, onOpenDetail }: Props) {
   const [range, setRange] = useState<ChartRange>('24H');
   const [scrubIndex, setScrubIndex] = useState<number | null>(null);
   const { points, loading, error, retry } = useCoinChart(active ? coin.id : null, range);
@@ -43,6 +52,9 @@ export function CoinDrawerPage({ coin, width, height, active }: Props) {
   const tint = up ? colors.positive : colors.negative;
   const absoluteChange = Math.abs(coin.price * (coin.changePct / 100));
   const chartWidth = width - spacing.xl * 2;
+  const chartHeight = height
+    ? Math.max(CHART_MIN, Math.min(CHART_MAX, height - CHROME_HEIGHT))
+    : CHART_MAX;
 
   const rank = coin.rank ? `Rank #${coin.rank}` : '';
   const subtitle = [coin.name === coin.symbol ? '' : coin.symbol, rank].filter(Boolean).join(' • ');
@@ -81,14 +93,27 @@ export function CoinDrawerPage({ coin, width, height, active }: Props) {
 
   return (
     <View style={[styles.page, { width }, height ? { height } : null]}>
-      <View style={styles.identityRow}>
-        <CoinAvatar coin={coin} size={34} />
-        <View>
-          <Text style={typography.rowTitle}>{coin.name}</Text>
-          {subtitle ? (
-            <Text style={[typography.rowSubtitle, styles.subtitle]}>{subtitle}</Text>
-          ) : null}
+      <View style={styles.header}>
+        <View style={styles.identityRow}>
+          <CoinAvatar coin={coin} size={34} />
+          <View>
+            <Text style={typography.rowTitle}>{coin.name}</Text>
+            {subtitle ? (
+              <Text style={[typography.rowSubtitle, styles.subtitle]}>{subtitle}</Text>
+            ) : null}
+          </View>
         </View>
+
+        {/* Absolute so the identity stays optically centred regardless of name length. */}
+        <Pressable
+          style={styles.expand}
+          hitSlop={10}
+          onPress={() => onOpenDetail?.(coin)}
+          accessibilityRole="button"
+          accessibilityLabel={`Open the full ${coin.name} page`}
+        >
+          <ExpandIcon size={18} />
+        </Pressable>
       </View>
 
       <Animated.View entering={FadeInDown.duration(320)} style={styles.priceBlock}>
@@ -103,7 +128,7 @@ export function CoinDrawerPage({ coin, width, height, active }: Props) {
       </Animated.View>
 
       <GestureDetector gesture={scrub}>
-        <View style={[styles.chart, { height: CHART_HEIGHT }]}>
+        <View style={[styles.chart, { height: chartHeight }]}>
           {points ? (
             <>
               <PriceChart
@@ -111,7 +136,7 @@ export function CoinDrawerPage({ coin, width, height, active }: Props) {
                 key={`${coin.id}-${range}`}
                 points={points}
                 width={chartWidth}
-                height={CHART_HEIGHT}
+                height={chartHeight}
                 color={tint}
                 scrubIndex={scrubIndex}
               />
@@ -200,6 +225,16 @@ const styles = StyleSheet.create({
   },
   spacer: {
     flex: 1,
+  },
+  header: {
+    justifyContent: 'center',
+  },
+  expand: {
+    position: 'absolute',
+    right: 0,
+    top: 0,
+    bottom: 0,
+    justifyContent: 'center',
   },
   identityRow: {
     flexDirection: 'row',

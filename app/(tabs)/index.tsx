@@ -81,6 +81,9 @@ export default function HomeScreen() {
         coins={drawer?.coins ?? []}
         index={drawer?.index ?? null}
         onClose={() => setDrawer(null)}
+        // The dedicated token page isn't built yet; the affordance is here so the
+        // drawer's layout is settled for when it is.
+        onOpenDetail={() => {}}
       />
     </View>
   );

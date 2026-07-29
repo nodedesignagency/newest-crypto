@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { FlatList, Modal, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
 import { Gesture, GestureDetector, GestureHandlerRootView } from 'react-native-gesture-handler';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Animated, {
   Extrapolation,
   interpolate,
@@ -22,6 +23,7 @@ type Props = {
   /** Index to open at, or null when the drawer is closed. */
   index: number | null;
   onClose: () => void;
+  onOpenDetail?: (coin: Coin) => void;
 };
 
 /** Fraction of the screen the sheet occupies when open. */
@@ -41,8 +43,9 @@ const OPEN_SPRING = { damping: 22, stiffness: 190, mass: 0.7 } as const;
  * activates on vertical movement and fails outright on horizontal — otherwise a
  * diagonal swipe would both scroll the pager and start dragging the sheet.
  */
-export function CoinDrawer({ coins, index, onClose }: Props) {
+export function CoinDrawer({ coins, index, onClose, onOpenDetail }: Props) {
   const { height: screenHeight, width } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
   const sheetHeight = screenHeight * SHEET_RATIO;
 
   // Kept mounted through the closing animation, then torn down.
@@ -160,6 +163,7 @@ export function CoinDrawer({ coins, index, onClose }: Props) {
                   width={width}
                   height={pageHeight}
                   active={i === active}
+                  onOpenDetail={onOpenDetail}
                 />
               )}
             />
@@ -192,7 +196,8 @@ const styles = StyleSheet.create({
     borderTopWidth: CARD_BORDER_WIDTH,
     borderTopColor: colors.cardBorder,
     paddingTop: spacing.md,
-    paddingBottom: spacing.xl,
+    // paddingBottom is applied inline so it can clear the device's home
+    // indicator or navigation bar — without it the buy button was cut off.
     gap: spacing.lg,
     boxShadow: innerGlow.tabBar,
   },
