@@ -26,14 +26,15 @@ export function SectionHeader({ icon, title }: Props) {
 }
 
 /**
- * Hairline rule with a small square cap at its left end — square, not round, and
- * brighter than the line it leads into.
+ * Hairline rule terminated by a small square cap at each end — square, not round,
+ * and brighter than the line they bracket.
  */
 export function Divider() {
   return (
     <View style={styles.dividerRow}>
       <View style={styles.cap} />
       <View style={styles.line} />
+      <View style={styles.cap} />
     </View>
   );
 }

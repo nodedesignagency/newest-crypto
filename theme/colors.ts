@@ -9,9 +9,15 @@ export const colors = {
   border: 'rgba(255,255,255,0.10)',
   borderStrong: 'rgba(255,255,255,0.14)',
 
-  /** Card surface, per Figma: 2% white over the ground, with a 10% white border. */
+  /** Card surface, per Figma: 2% white over the ground. */
   cardFill: 'rgba(255,255,255,0.02)',
-  cardBorder: 'rgba(255,255,255,0.10)',
+  /**
+   * Solid card border. Figma specifies 10% white, but a translucent border sits
+   * too close to the fill once the inner glow lifts it — on the Spotlight card
+   * the two were within 1/255 of each other. A solid value holds its edge
+   * regardless of what the glow does behind it.
+   */
+  cardBorder: '#373640',
   /** Square cap terminating each divider — solid white, flush against the line. */
   dividerCap: '#FFFFFF',
 
