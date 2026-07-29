@@ -14,7 +14,7 @@ type Props = {
 /** Directional triangle + percentage, colored by sign. */
 export function ChangeBadge({ changePct, size = 'sm' }: Props) {
   const up = changePct >= 0;
-  const fontSize = size === 'md' ? 15 : 12;
+  const fontSize = size === 'md' ? 14 : 11;
 
   return (
     <View style={styles.row}>

@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     color: colors.text,
-    fontSize: 15,
+    fontSize: 14,
     // RN web adds a focus ring on inputs; the field border is the affordance here.
     outlineStyle: 'none',
   } as any,

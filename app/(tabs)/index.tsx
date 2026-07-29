@@ -111,6 +111,6 @@ const styles = StyleSheet.create({
   },
   retryText: {
     color: colors.accent,
-    fontWeight: '600',
+    fontWeight: '500',
   },
 });

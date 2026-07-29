@@ -15,11 +15,11 @@ const base: TextStyle = { fontFamily: family, color: colors.text };
  * so the scale holds regardless of the export's pixel density.
  */
 export const typography = {
-  balance: { ...base, fontSize: 26, fontWeight: '600' },
-  sectionTitle: { ...base, fontSize: 22, fontWeight: '600' },
-  rowTitle: { ...base, fontSize: 15, fontWeight: '500' },
-  rowSubtitle: { ...base, fontSize: 11, fontWeight: '400' },
-  price: { ...base, fontSize: 15, fontWeight: '500' },
-  label: { ...base, fontSize: 13, fontWeight: '400' },
-  badge: { ...base, fontSize: 14, fontWeight: '600' },
+  balance: { ...base, fontSize: 23, fontWeight: '500' },
+  sectionTitle: { ...base, fontSize: 19, fontWeight: '500' },
+  rowTitle: { ...base, fontSize: 14, fontWeight: '500' },
+  rowSubtitle: { ...base, fontSize: 10, fontWeight: '400' },
+  price: { ...base, fontSize: 14, fontWeight: '500' },
+  label: { ...base, fontSize: 12, fontWeight: '400' },
+  badge: { ...base, fontSize: 13, fontWeight: '500' },
 } satisfies Record<string, TextStyle>;

@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     color: colors.textMuted,
-    fontSize: 12,
+    fontSize: 11,
   },
   liveRow: {
     flexDirection: 'row',
@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
   },
   liveText: {
     color: colors.accent,
-    fontSize: 15,
+    fontSize: 14,
     letterSpacing: 0.5,
   },
   bottomRow: {
@@ -100,11 +100,11 @@ const styles = StyleSheet.create({
   },
   muted: {
     color: colors.textMuted,
-    fontSize: 14,
+    fontSize: 13,
   },
   soldValue: {
     color: colors.text,
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '500',
   },
 });
