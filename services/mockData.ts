@@ -115,6 +115,7 @@ const spotlight: SpotlightItem = {
   isLive: true,
   window: 'Past hour',
   soldUsd: 2_400,
+  windowChangePct: -19.29,
 };
 
 export const mockHomeData: HomeData = {
@@ -126,7 +127,7 @@ export const mockHomeData: HomeData = {
 
 /**
  * Simulates a network round-trip so the screen exercises its real loading path.
- * Replace the body with an API call when moving off mock data.
+ * Used when EXPO_PUBLIC_USE_MOCK=1; see `./marketData`.
  */
 export function fetchHomeData(delayMs = 600): Promise<HomeData> {
   return new Promise((resolve) => {

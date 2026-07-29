@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useState } from 'react';
+import { Image, StyleSheet, Text, View } from 'react-native';
 import { Coin } from '../../services/types';
 import { colors } from '../../theme/colors';
 import { monogram } from '../../utils/format';
@@ -10,18 +10,28 @@ type Props = {
 };
 
 /**
- * Circular coin mark. Real logo artwork isn't in the repo yet, so this renders a
- * monogram on the coin's brand color — same footprint as an <Image>, so swapping
- * in remote logos later is a one-line change.
+ * Circular coin mark. Renders the coin's real artwork when the API supplied a
+ * logo, and falls back to a monogram on the coin's color when it didn't — or
+ * when the image fails to load (offline, dead URL, blocked by CSP).
  */
 export function CoinAvatar({ coin, size = 44 }: Props) {
+  const [failed, setFailed] = useState(false);
+  const shape = { width: size, height: size, borderRadius: size / 2 };
+
+  if (coin.logoUrl && !failed) {
+    return (
+      <Image
+        source={{ uri: coin.logoUrl }}
+        style={[styles.circle, shape]}
+        onError={() => setFailed(true)}
+        accessibilityIgnoresInvertColors
+        accessibilityLabel={`${coin.name} logo`}
+      />
+    );
+  }
+
   return (
-    <View
-      style={[
-        styles.circle,
-        { width: size, height: size, borderRadius: size / 2, backgroundColor: coin.color },
-      ]}
-    >
+    <View style={[styles.circle, shape, { backgroundColor: coin.color }]}>
       <Text style={[styles.text, { fontSize: size * 0.42 }]}>
         {monogram(coin.symbol, coin.glyph)}
       </Text>

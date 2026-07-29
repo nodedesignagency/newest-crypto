@@ -32,14 +32,53 @@ utils/format.ts        price, percent, and compact-USD formatting
 
 ## Data
 
-The screen runs on **mock data** (`services/mockData.ts`) shaped to match the mockup.
-`useHomeData` already exposes the loading, error, and pull-to-refresh states a real API
-needs, so going live means replacing the body of `fetchHomeData` with a network call that
-returns the same `HomeData` — no component changes.
+The screen runs on **live market data from CoinGecko** (`services/coingecko.ts`).
+Two requests cover the whole screen:
 
-Two fields have no obvious market-data source and are placeholders in the mock: the
-Spotlight card's `isLive` badge and `soldUsd`, which are trade-activity signals rather
-than price data.
+| Section | Endpoint | Notes |
+|---|---|---|
+| Trending | `/search/trending` | CoinGecko's own trending feed; carries price, market cap, change and logo in one call |
+| Top Gainers | `/coins/markets` | Sorted client-side by 24h change, losers excluded, top 6 |
+| Spotlight | `/coins/markets` | The largest absolute 1h mover |
+
+Responses are cached for 60s and concurrent calls to the same endpoint are de-duped,
+so remounting the screen or double-pulling doesn't spend rate limit. Pull-to-refresh
+bypasses the cache.
+
+### Spotlight fields
+
+No price API exposes launchpad/social signals, so the mockup's `Moonshot` / `LIVE` /
+`Sold $2.4K` map onto real data:
+
+- **`Sold`** — the coin's real 24h traded volume
+- **Venue line** — the coin's market cap rank, e.g. `Rank #23`
+- **`LIVE`** — *derived*, not reported: shown when the 1h move exceeds 3%
+  (`LIVE_THRESHOLD_PCT` in `services/coingecko.ts`)
+
+### Configuration
+
+Copy `.env.example` to `.env`:
+
+```
+EXPO_PUBLIC_COINGECKO_KEY=CG-xxxxxxxx   # optional, free Demo key
+EXPO_PUBLIC_USE_MOCK=1                  # optional, forces the bundled mock data
+```
+
+The key is optional — without it the app works at a lower rate limit. Get a free
+Demo key (no card) at coingecko.com under Developer Dashboard. `.env` is gitignored.
+
+Set `EXPO_PUBLIC_USE_MOCK=1` to run against `services/mockData.ts` instead — useful
+offline, and required in sandboxes that block `api.coingecko.com`.
+
+## Tests
+
+```bash
+npm test
+```
+
+Covers the response mappers against saved fixtures in `services/__fixtures__/`,
+including null-heavy entries and string-formatted numbers. The transport layer
+isn't covered — it needs real network access.
 
 ## Icons
 

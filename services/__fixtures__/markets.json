@@ -1,0 +1,62 @@
+[
+  {
+    "id": "bitcoin",
+    "symbol": "btc",
+    "name": "Bitcoin",
+    "image": "https://coin-images.coingecko.com/coins/images/1/large/bitcoin.png",
+    "current_price": 118432.11,
+    "market_cap": 2358000000000,
+    "market_cap_rank": 1,
+    "total_volume": 41200000000,
+    "price_change_percentage_24h": 1.42,
+    "price_change_percentage_1h_in_currency": 0.31
+  },
+  {
+    "id": "jupiter-exchange-solana",
+    "symbol": "jup",
+    "name": "Jupiter",
+    "image": "https://coin-images.coingecko.com/coins/images/34188/large/jup.png",
+    "current_price": 0.2751,
+    "market_cap": 19800000000,
+    "market_cap_rank": 23,
+    "total_volume": 2400000,
+    "price_change_percentage_24h": 26.52,
+    "price_change_percentage_1h_in_currency": -19.29
+  },
+  {
+    "id": "bonk",
+    "symbol": "bonk",
+    "name": "Bonk",
+    "image": "https://coin-images.coingecko.com/coins/images/28600/large/bonk.jpg",
+    "current_price": 0.0000214,
+    "market_cap": 1600000000,
+    "market_cap_rank": 62,
+    "total_volume": 180000000,
+    "price_change_percentage_24h": 8.14,
+    "price_change_percentage_1h_in_currency": 1.02
+  },
+  {
+    "id": "dogwifcoin",
+    "symbol": "wif",
+    "name": "dogwifhat",
+    "image": "https://coin-images.coingecko.com/coins/images/33566/large/dogwifhat.jpg",
+    "current_price": 1.42,
+    "market_cap": 1420000000,
+    "market_cap_rank": 71,
+    "total_volume": 210000000,
+    "price_change_percentage_24h": -3.87,
+    "price_change_percentage_1h_in_currency": -0.44
+  },
+  {
+    "id": "missing-fields-coin",
+    "symbol": "nul",
+    "name": "Null Coin",
+    "image": null,
+    "current_price": null,
+    "market_cap": null,
+    "market_cap_rank": null,
+    "total_volume": null,
+    "price_change_percentage_24h": null,
+    "price_change_percentage_1h_in_currency": null
+  }
+]

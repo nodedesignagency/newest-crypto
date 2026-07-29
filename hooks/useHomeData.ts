@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { fetchHomeData } from '../services/mockData';
+import { fetchHomeData } from '../services/marketData';
 import { HomeData } from '../services/types';
 
 type State = {
@@ -10,8 +10,8 @@ type State = {
 };
 
 /**
- * Loads the home screen's market data. Backed by mock data today; the component
- * contract (data/loading/error/refresh) already matches what a real API needs.
+ * Loads the home screen's market data. Pull-to-refresh bypasses the client's
+ * 60s cache; opening the screen does not, so remounting is free.
  */
 export function useHomeData() {
   const [state, setState] = useState<State>({
@@ -30,7 +30,7 @@ export function useHomeData() {
     }));
 
     try {
-      const data = await fetchHomeData(isRefresh ? 400 : 600);
+      const data = await fetchHomeData({ fresh: isRefresh });
       setState({ data, loading: false, error: null, refreshing: false });
     } catch (err) {
       setState((prev) => ({

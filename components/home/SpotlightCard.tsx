@@ -15,7 +15,7 @@ type Props = {
 
 /** Featured coin card: identity + venue, live badge, hourly move, sold volume. */
 export function SpotlightCard({ item }: Props) {
-  const { coin, venue, isLive, window, soldUsd } = item;
+  const { coin, venue, isLive, window, soldUsd, windowChangePct } = item;
 
   return (
     <Pressable style={styles.card} accessibilityRole="button">
@@ -37,7 +37,7 @@ export function SpotlightCard({ item }: Props) {
 
       <View style={styles.bottomRow}>
         <View style={styles.changeGroup}>
-          <ChangeBadge changePct={coin.changePct} size="md" />
+          <ChangeBadge changePct={windowChangePct} size="md" />
           <Text style={[typography.label, styles.muted]}>{window}</Text>
         </View>
         <View style={styles.soldGroup}>
