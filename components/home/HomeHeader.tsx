@@ -3,6 +3,7 @@ import { Pressable, StyleSheet, TextInput, View } from 'react-native';
 import { HistoryIcon, SearchIcon, SettingsIcon } from '../icons';
 import { colors } from '../../theme/colors';
 import { GUTTER, radius, spacing } from '../../theme/spacing';
+import { CARD_BORDER_WIDTH, innerGlow } from '../../theme/effects';
 import { typography } from '../../theme/typography';
 
 /** Top bar: history shortcut, search field, settings. */
@@ -46,9 +47,11 @@ const styles = StyleSheet.create({
     height: 48,
     paddingHorizontal: spacing.lg,
     borderRadius: radius.none,
-    borderWidth: 1,
-    borderColor: colors.borderStrong,
-    backgroundColor: colors.surface,
+    // Same surface treatment as the Top Gainers card.
+    borderWidth: CARD_BORDER_WIDTH,
+    borderColor: colors.cardBorder,
+    backgroundColor: colors.cardFill,
+    boxShadow: innerGlow.gainerCard,
   },
   input: {
     flex: 1,
