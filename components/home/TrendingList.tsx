@@ -10,25 +10,26 @@ import { formatCompactUsd, formatPrice } from '../../utils/format';
 
 type Props = {
   coins: Coin[];
+  onSelect?: (index: number) => void;
 };
 
 /**
  * Vertical trending list. Rendered as plain views rather than a FlatList because it
  * lives inside the home ScrollView and the row count is small and bounded.
  */
-export function TrendingList({ coins }: Props) {
+export function TrendingList({ coins, onSelect }: Props) {
   return (
     <View style={styles.list}>
-      {coins.map((coin) => (
-        <TrendingRow key={coin.id} coin={coin} />
+      {coins.map((coin, i) => (
+        <TrendingRow key={coin.id} coin={coin} onPress={() => onSelect?.(i)} />
       ))}
     </View>
   );
 }
 
-function TrendingRow({ coin }: { coin: Coin }) {
+function TrendingRow({ coin, onPress }: { coin: Coin; onPress: () => void }) {
   return (
-    <Pressable style={styles.row} accessibilityRole="button">
+    <Pressable style={styles.row} onPress={onPress} accessibilityRole="button">
       <CoinAvatar coin={coin} size={42} />
       <View style={styles.identity}>
         <Text style={typography.rowTitle} numberOfLines={1}>

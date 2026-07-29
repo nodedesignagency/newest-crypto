@@ -10,10 +10,11 @@ import { typography } from '../../theme/typography';
 
 type Props = {
   coins: Coin[];
+  onSelect?: (index: number) => void;
 };
 
 /** Horizontally scrolling row of best 24h performers. */
-export function TopGainers({ coins }: Props) {
+export function TopGainers({ coins, onSelect }: Props) {
   return (
     <FlatList
       horizontal
@@ -21,14 +22,16 @@ export function TopGainers({ coins }: Props) {
       keyExtractor={(item) => item.id}
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={styles.list}
-      renderItem={({ item }) => <GainerCard coin={item} />}
+      renderItem={({ item, index }) => (
+        <GainerCard coin={item} onPress={() => onSelect?.(index)} />
+      )}
     />
   );
 }
 
-function GainerCard({ coin }: { coin: Coin }) {
+function GainerCard({ coin, onPress }: { coin: Coin; onPress: () => void }) {
   return (
-    <Pressable style={styles.card} accessibilityRole="button">
+    <Pressable style={styles.card} onPress={onPress} accessibilityRole="button">
       {/* Logo and symbol are one unit, 8px apart; the change sits outside that group. */}
       <View style={styles.identity}>
         {/* Sized so the card hugs to Figma's 43.94 total: 23.4 + 9.35 padding x2 + 1 border x2. */}

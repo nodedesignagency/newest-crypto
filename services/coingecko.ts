@@ -5,7 +5,7 @@
  * Free tier: works without a key at a low rate limit; set EXPO_PUBLIC_COINGECKO_KEY
  * to a free Demo key for ~30 calls/min.
  */
-import { Coin, HomeData, SpotlightItem } from './types';
+import { ChartRange, Coin, HomeData, SpotlightItem } from './types';
 
 /** Overridable so the live path can be exercised against a local fixture server. */
 const BASE_URL =
@@ -209,6 +209,52 @@ export function toTopGainers(markets: RawMarketCoin[]): Coin[] {
 }
 
 // ---------------------------------------------------------------- public API
+
+/**
+ * Days of history per timeframe. LIVE and 24H both request one day because
+ * that is CoinGecko's finest free granularity (5-minute points); LIVE simply
+ * shows the tail of it.
+ */
+const RANGE_DAYS: Record<ChartRange, string> = {
+  LIVE: '1',
+  '24H': '1',
+  '1W': '7',
+  '1M': '30',
+  '1Y': '365',
+  ALL: 'max',
+};
+
+/** Points kept after downsampling — enough to read, cheap enough to animate. */
+const CHART_RESOLUTION = 120;
+
+/** LIVE is the most recent slice of the 24h series rather than its own request. */
+const LIVE_TAIL_FRACTION = 0.12;
+
+/** Evenly thins a series to at most `max` points, always keeping the last one. */
+function downsample(values: number[], max = CHART_RESOLUTION): number[] {
+  if (values.length <= max) return values;
+  const step = (values.length - 1) / (max - 1);
+  return Array.from({ length: max }, (_, i) => values[Math.round(i * step)]);
+}
+
+export async function fetchMarketChart(
+  coinId: string,
+  range: ChartRange,
+  { fresh = false } = {},
+): Promise<number[]> {
+  const raw = await request<{ prices: [number, number][] }>(
+    `/coins/${coinId}/market_chart?vs_currency=usd&days=${RANGE_DAYS[range]}`,
+    { fresh },
+  );
+
+  let prices = (raw.prices ?? []).map(([, price]) => num(price)).filter(Number.isFinite);
+  if (prices.length === 0) throw new ApiError('No price history for this coin.');
+
+  if (range === 'LIVE') {
+    prices = prices.slice(-Math.max(2, Math.floor(prices.length * LIVE_TAIL_FRACTION)));
+  }
+  return downsample(prices);
+}
 
 export async function fetchHomeData({ fresh = false } = {}): Promise<HomeData> {
   const marketsPath =

@@ -12,14 +12,15 @@ import { formatCompactUsd } from '../../utils/format';
 
 type Props = {
   item: SpotlightItem;
+  onPress?: () => void;
 };
 
 /** Featured coin card: identity + venue, live badge, hourly move, sold volume. */
-export function SpotlightCard({ item }: Props) {
+export function SpotlightCard({ item, onPress }: Props) {
   const { coin, venue, isLive, window, soldUsd, windowChangePct } = item;
 
   return (
-    <Pressable style={styles.card} accessibilityRole="button">
+    <Pressable style={styles.card} onPress={onPress} accessibilityRole="button">
       {/*
         The glow lives on its own layer inside the border rather than on the card.
         A translucent border lets the card's own inset shadow bleed through it, which

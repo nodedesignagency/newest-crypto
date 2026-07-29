@@ -38,6 +38,10 @@ export type SpotlightItem = {
   windowChangePct: number;
 };
 
+/** Windows offered by the chart's timeframe selector. */
+export const CHART_RANGES = ['LIVE', '24H', '1W', '1M', '1Y', 'ALL'] as const;
+export type ChartRange = (typeof CHART_RANGES)[number];
+
 export type HomeData = {
   totalBalance: number;
   spotlight: SpotlightItem;

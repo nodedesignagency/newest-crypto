@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ActivityIndicator, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { HomeHeader } from '../../components/home/HomeHeader';
@@ -8,8 +8,10 @@ import { TopGainers } from '../../components/home/TopGainers';
 import { TrendingList } from '../../components/home/TrendingList';
 import { Divider, SectionHeader } from '../../components/ui/SectionHeader';
 import { BottomFade } from '../../components/ui/BottomFade';
+import { CoinDrawer } from '../../components/coin/CoinDrawer';
 import { SpotlightIcon, TopGainersIcon, TrendingIcon } from '../../components/icons';
 import { useHomeData } from '../../hooks/useHomeData';
+import { Coin } from '../../services/types';
 import { colors } from '../../theme/colors';
 import { GUTTER, spacing } from '../../theme/spacing';
 import { typography } from '../../theme/typography';
@@ -17,6 +19,10 @@ import { typography } from '../../theme/typography';
 export default function HomeScreen() {
   const insets = useSafeAreaInsets();
   const { data, loading, error, refreshing, refresh, retry } = useHomeData();
+
+  // The drawer swipes through whichever list it was opened from, so opening it
+  // carries that list along rather than reaching back into `data`.
+  const [drawer, setDrawer] = useState<{ coins: Coin[]; index: number } | null>(null);
 
   return (
     <View style={[styles.screen, { paddingTop: insets.top + spacing.md }]}>
@@ -44,23 +50,38 @@ export default function HomeScreen() {
 
             <View style={styles.section}>
               <SectionHeader icon={<SpotlightIcon size={26} />} title="Spotlight" />
-              <SpotlightCard item={data.spotlight} />
+              <SpotlightCard
+                item={data.spotlight}
+                onPress={() => setDrawer({ coins: [data.spotlight.coin], index: 0 })}
+              />
             </View>
 
             <View style={styles.section}>
               <SectionHeader icon={<TopGainersIcon size={26} />} title="Top Gainers" />
-              <TopGainers coins={data.topGainers} />
+              <TopGainers
+                coins={data.topGainers}
+                onSelect={(index) => setDrawer({ coins: data.topGainers, index })}
+              />
             </View>
 
             <View style={styles.section}>
               <SectionHeader icon={<TrendingIcon size={26} />} title="Trending" />
-              <TrendingList coins={data.trending} />
+              <TrendingList
+                coins={data.trending}
+                onSelect={(index) => setDrawer({ coins: data.trending, index })}
+              />
             </View>
           </>
         ) : null}
       </ScrollView>
 
       <BottomFade />
+
+      <CoinDrawer
+        coins={drawer?.coins ?? []}
+        index={drawer?.index ?? null}
+        onClose={() => setDrawer(null)}
+      />
     </View>
   );
 }

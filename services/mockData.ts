@@ -134,3 +134,30 @@ export function fetchHomeData(delayMs = 600): Promise<HomeData> {
     setTimeout(() => resolve(mockHomeData), delayMs);
   });
 }
+
+/**
+ * Deterministic price history for mock mode. Seeded by coin id and range so a
+ * given chart looks the same every time it opens rather than reshuffling.
+ */
+export function mockChart(coinId: string, range: string, points = 120): number[] {
+  let seed = 0;
+  for (const ch of `${coinId}:${range}`) seed = (seed * 31 + ch.charCodeAt(0)) % 2147483647;
+  const rand = () => {
+    seed = (seed * 1103515245 + 12345) % 2147483647;
+    return seed / 2147483647;
+  };
+
+  const base = 100;
+  const drift = (rand() - 0.5) * 0.4;
+  let value = base;
+  return Array.from({ length: points }, (_, i) => {
+    value += (rand() - 0.5) * 4 + drift;
+    // One sharp move so the line has a story, like the reference design.
+    if (i === Math.floor(points * 0.28)) value -= 14;
+    return Math.max(5, value);
+  });
+}
+
+export function fetchMockChart(coinId: string, range: string, delayMs = 320): Promise<number[]> {
+  return new Promise((resolve) => setTimeout(() => resolve(mockChart(coinId, range)), delayMs));
+}
