@@ -7,6 +7,7 @@ import { SpotlightCard } from '../../components/home/SpotlightCard';
 import { TopGainers } from '../../components/home/TopGainers';
 import { TrendingList } from '../../components/home/TrendingList';
 import { Divider, SectionHeader } from '../../components/ui/SectionHeader';
+import { BottomFade } from '../../components/ui/BottomFade';
 import { SpotlightIcon, TopGainersIcon, TrendingIcon } from '../../components/icons';
 import { useHomeData } from '../../hooks/useHomeData';
 import { colors } from '../../theme/colors';
@@ -58,6 +59,8 @@ export default function HomeScreen() {
           </>
         ) : null}
       </ScrollView>
+
+      <BottomFade />
     </View>
   );
 }

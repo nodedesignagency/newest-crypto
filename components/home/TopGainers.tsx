@@ -29,11 +29,14 @@ export function TopGainers({ coins }: Props) {
 function GainerCard({ coin }: { coin: Coin }) {
   return (
     <Pressable style={styles.card} accessibilityRole="button">
-      {/* Sized so the card hugs to Figma's 43.94 total: 23.4 + 9.35 padding x2 + 0.93 border x2. */}
-      <CoinAvatar coin={coin} size={23.4} />
-      <Text style={[typography.rowTitle, styles.name]} numberOfLines={1}>
-        {coin.symbol}
-      </Text>
+      {/* Logo and symbol are one unit, 8px apart; the change sits outside that group. */}
+      <View style={styles.identity}>
+        {/* Sized so the card hugs to Figma's 43.94 total: 23.4 + 9.35 padding x2 + 1 border x2. */}
+        <CoinAvatar coin={coin} size={23.4} />
+        <Text style={[typography.rowTitle, styles.name]} numberOfLines={1}>
+          {coin.symbol}
+        </Text>
+      </View>
       <ChangeBadge changePct={coin.changePct} size="md" />
     </Pressable>
   );
@@ -54,6 +57,11 @@ const styles = StyleSheet.create({
     borderColor: colors.cardBorder,
     backgroundColor: colors.cardFill,
     boxShadow: innerGlow.gainerCard,
+  },
+  identity: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
   },
   name: {
     color: colors.text,

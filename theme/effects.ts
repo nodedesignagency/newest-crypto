@@ -55,3 +55,21 @@ export const innerGlow = {
 
 /** Figma: the bottom nav measures 402 × 87.88 on a 402pt-wide frame. */
 export const TAB_BAR_HEIGHT = 87.88;
+
+/**
+ * The blur/fade that sits over the list above the tab bar.
+ *
+ * Figma: 402 × 112.19 at y 743.23, a #02020E linear gradient with a 13.28
+ * background blur. The nav starts at y 783.43, so only the top 40.2 shows.
+ */
+export const FADE_HEIGHT = 40.2;
+
+/** How far along its ramp the gradient gets before the nav takes over. */
+export const FADE_MAX_OPACITY = Number((40.2 / 112.19).toFixed(3));
+
+/**
+ * expo-blur's web backend renders `blur(intensity * 0.2px)`, so 66 reproduces
+ * Figma's 13.28px exactly. On iOS/Android intensity drives a native blur whose
+ * radius isn't expressed in px, but 66 lands in the same visual register.
+ */
+export const FADE_BLUR_INTENSITY = 66;
