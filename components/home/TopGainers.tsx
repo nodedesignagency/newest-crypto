@@ -48,13 +48,13 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
-    borderRadius: radius.md,
+    borderRadius: radius.none,
     borderWidth: 1,
     borderColor: colors.borderStrong,
     backgroundColor: colors.surface,
   },
   name: {
     color: colors.text,
-    fontSize: 19,
+    fontSize: 16,
   },
 });

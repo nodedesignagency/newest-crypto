@@ -42,6 +42,6 @@ const styles = StyleSheet.create({
   },
   label: {
     color: colors.textMuted,
-    fontSize: 16,
+    fontSize: 13,
   },
 });

@@ -25,11 +25,14 @@ export function SectionHeader({ icon, title }: Props) {
   );
 }
 
-/** Dotted-start hairline used under section titles and the header. */
+/**
+ * Hairline rule with a small square cap at its left end — square, not round, and
+ * brighter than the line it leads into.
+ */
 export function Divider() {
   return (
     <View style={styles.dividerRow}>
-      <View style={styles.dot} />
+      <View style={styles.cap} />
       <View style={styles.line} />
     </View>
   );
@@ -51,15 +54,14 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     paddingHorizontal: GUTTER / 2,
   },
-  dot: {
-    width: 3,
-    height: 3,
-    borderRadius: 1.5,
-    backgroundColor: colors.borderStrong,
+  cap: {
+    width: 4,
+    height: 4,
+    backgroundColor: colors.dividerCap,
   },
   line: {
     flex: 1,
-    height: StyleSheet.hairlineWidth,
+    height: 1,
     backgroundColor: colors.border,
   },
 });

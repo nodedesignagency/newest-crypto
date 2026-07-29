@@ -8,10 +8,13 @@ export const spacing = {
   '3xl': 36,
 } as const;
 
+/**
+ * The design uses crisp rectangles — cards and the search field are square-cornered,
+ * so `none` is the default for surfaces. Only genuinely pill-shaped elements round.
+ */
 export const radius = {
-  sm: 6,
-  md: 10,
-  lg: 14,
+  none: 0,
+  sm: 2,
   pill: 999,
 } as const;
 

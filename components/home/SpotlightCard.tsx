@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     marginHorizontal: GUTTER,
     padding: spacing.lg,
     gap: spacing.lg,
-    borderRadius: radius.md,
+    borderRadius: radius.none,
     borderWidth: 1,
     borderColor: colors.borderStrong,
     backgroundColor: colors.surface,
@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     color: colors.textMuted,
-    fontSize: 14,
+    fontSize: 12,
   },
   liveRow: {
     flexDirection: 'row',
@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
   },
   liveText: {
     color: colors.accent,
-    fontSize: 17,
+    fontSize: 15,
     letterSpacing: 0.5,
   },
   bottomRow: {
@@ -100,11 +100,11 @@ const styles = StyleSheet.create({
   },
   muted: {
     color: colors.textMuted,
-    fontSize: 16,
+    fontSize: 14,
   },
   soldValue: {
     color: colors.text,
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '500',
   },
 });
